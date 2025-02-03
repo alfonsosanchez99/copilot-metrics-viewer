@@ -4,6 +4,7 @@ import { CopilotMetrics } from '../model/Copilot_Metrics';
 import { convertToMetrics } from './MetricsToUsageConverter';
 import organizationMockedMetricsResponse from '../../mock-data/organization_metrics_response_sample.json';
 import enterpriseMockedMetricsResponse from '../../mock-data/enterprise_metrics_response_sample.json';
+import dataTelefonica from '../assets/dataTelefonica.json'
 import config from '../config';
 
 const headers = {
@@ -34,7 +35,6 @@ export const getMetricsApi = async (): Promise<{ metrics: Metrics[], original: C
   let originalData: CopilotMetrics[];
 
   if (config.mockedData) {
-    console.log("Using mock data. Check VUE_APP_MOCKED_DATA variable.");
     response = config.scope.type === "organization" ? organizationMockedMetricsResponse : enterpriseMockedMetricsResponse;
     originalData = ensureCopilotMetrics(response);
     metricsData = convertToMetrics(originalData);

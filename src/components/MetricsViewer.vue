@@ -1,8 +1,28 @@
 <template>
   <div>
+    <div class="text-h5 mx-4" style="font-weight: 500; margin-top: 20px;">Select Date</div>
+    <div class="dates-container" style="display: flex; flex-direction: row; margin-top: 10px;">
+      <v-card elevation="4" color="white" variant="elevated" class="mx-auto my-3" style="width: calc(50% - 20px); height: 50px; text-align-last: center;">
+        <v-card-item>
+          <label for="start" style="font-size: 18px;">Start date: </label>
+          <input type="date" id="start" name="trip-start" value="2024-12-01" min="2024-01-01" max="2026-12-31" />
+        </v-card-item>
+      </v-card>
+      <v-card elevation="4" color="white" variant="elevated" class="mx-auto my-3" style="width: calc(50% - 20px); height: 50px; text-align-last: center;">
+        <v-card-item>
+          <label for="start" style="font-size: 18px;">End date: </label>
+          <input type="date" id="end" name="trip-start" value="2025-01-01" min="2024-01-01" max="2026-12-31" />
+        </v-card-item>
+      </v-card>
+    </div>
     <div class="tiles-container">      
+
+      <!--Usar getDiff para obtener el numero de dias entre las dos fechas-->
+
       <!-- Acceptance Rate Tile -->  
       <!--changed on 2024/11/22 to reorder cards, so the accepance rate by counts are be more focused-->
+
+
       <v-card elevation="4" color="white" variant="elevated" class="mx-auto my-3" style="width: 300px; height: 175px;">
         <v-card-item>
           <div class="tiles-text">
