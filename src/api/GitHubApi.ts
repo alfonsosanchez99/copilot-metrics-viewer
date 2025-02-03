@@ -23,7 +23,6 @@ export const getMetricsApi = async (): Promise<Metrics[]> => {
   let metricsData;
 
   if (config.mockedData) {
-    console.log("Using mock data. Check VUE_APP_MOCKED_DATA variable.");
     response = config.scope.type === "organization" ? organizationMockedResponse : enterpriseMockedResponse;
     metricsData = response.map((item: any) => new Metrics(item));
   } else {
@@ -33,8 +32,6 @@ export const getMetricsApi = async (): Promise<Metrics[]> => {
        headers
       }
     );
-
-
     metricsData = response.data.map((item: any) => new Metrics(item));
   }
   return metricsData;

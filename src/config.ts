@@ -39,6 +39,8 @@ else {
 
 const config: Config = {
 	mockedData: env.VUE_APP_MOCKED_DATA === "true",
+	useUploadedFile: false,
+	uploadedData: [] as any[],
 	scope: {
 		type: scopeType,
 		name: scopeName
@@ -60,6 +62,9 @@ export default config;
 
 interface Config {
 	mockedData: boolean;
+	useUploadedFile: boolean;
+	uploadedData: any[];
+
 	scope: {
 		type: 'organization' | 'enterprise';
 		name: string;

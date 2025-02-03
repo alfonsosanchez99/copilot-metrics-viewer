@@ -21,7 +21,6 @@ export const getSeatsApi = async (): Promise<Seat[]> => {
   let response;
 
   if (config.mockedData) {
-    console.log("Using mock data. Check VUE_APP_MOCKED_DATA variable.");
     response = config.scope.type === "organization" ? organizationMockedResponse_seats : enterpriseMockedResponse_seats;
     seatsData = seatsData.concat(response.seats.map((item: any) => new Seat(item)));
     return seatsData;

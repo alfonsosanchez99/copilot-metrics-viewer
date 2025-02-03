@@ -45,6 +45,7 @@
             <CopilotChatViewer v-if="item === 'copilot chat'" :metrics="metrics" />
             <SeatsAnalysisViewer v-if="item === 'seat analysis'" :seats="seats" />
             <ApiResponse v-if="item === 'api response'" :metrics="metrics" :seats="seats" />
+            <NewFile  v-if="item === 'new file'"/>
           </v-card>
         </v-window-item>
       </v-window>
@@ -68,6 +69,7 @@ import CopilotChatViewer from './CopilotChatViewer.vue'
 import SeatsAnalysisViewer from './SeatsAnalysisViewer.vue'
 import ApiResponse from './ApiResponse.vue'
 import config from '../config';
+import NewFile from './NewFile.vue';
 
 export default defineComponent({
   name: 'MainComponent',
@@ -76,7 +78,8 @@ export default defineComponent({
     BreakdownComponent,
     CopilotChatViewer,
     SeatsAnalysisViewer,
-    ApiResponse
+    ApiResponse,
+    NewFile
   },
   computed: {
     gitHubOrgName() {
@@ -104,7 +107,7 @@ export default defineComponent({
       return teamName;
     },
     mockedDataMessage() {
-      return config.mockedData ? 'Using mock data - see README if unintended' : '';
+      return config.mockedData ? '' : '';
     },
     showLogoutButton() {
       return config.github.baseApi === '/api/github';
@@ -112,7 +115,7 @@ export default defineComponent({
   },
   data () {
     return {
-      tabItems: ['languages', 'editors', 'copilot chat', 'seat analysis', 'api response'],
+      tabItems: ['languages', 'editors', 'copilot chat', 'seat analysis', 'api response', 'new file'],
       tab: null
     }
   },
