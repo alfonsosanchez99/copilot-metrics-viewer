@@ -5,13 +5,13 @@
       <v-card elevation="4" color="white" variant="elevated" class="mx-auto my-3" style="width: calc(50% - 20px); height: 50px; text-align-last: center;">
         <v-card-item>
           <label for="start" style="font-size: 18px;">Start date: </label>
-          <input type="date" id="start" name="trip-start" value="2024-12-01" min="2024-01-01" max="2026-12-31" />
+          <input type="date" id="start" name="trip-start" v-model="startDate" min="2024-01-01" max="2026-12-31"/>
         </v-card-item>
       </v-card>
       <v-card elevation="4" color="white" variant="elevated" class="mx-auto my-3" style="width: calc(50% - 20px); height: 50px; text-align-last: center;">
         <v-card-item>
           <label for="start" style="font-size: 18px;">End date: </label>
-          <input type="date" id="end" name="trip-start" value="2025-01-01" min="2024-01-01" max="2026-12-31" />
+          <input type="date" id="end" name="trip-start" v-model="endDate" min="2024-01-01" max="2026-12-31"/>
         </v-card-item>
       </v-card>
     </div>
@@ -29,7 +29,7 @@
             <div class="spacing-25"></div>
             <div class="text-h6 mb-1">Acceptance Rate (by count)</div>
             <div class="text-caption">
-              Over the last 28 days
+              Over the last {{ daysDifference }} days
             </div>
             <p class="text-h4">{{ acceptanceRateAverageByCount.toFixed(2) }}%</p>
           </div>
@@ -42,7 +42,7 @@
             <div class="spacing-10"></div>
             <div class="text-h6 mb-1">Total count of Suggestions (Prompts)</div>
             <div class="text-caption">
-              Over the last 28 days
+              Over the last {{ daysDifference }} days
             </div>
             <p class="text-h4">{{ cumulativeNumberSuggestions }}</p>
           </div>
@@ -55,7 +55,7 @@
             <div class="tiles-text">
               <div class="text-h6 mb-1">Acceptance Rate (by lines)</div>
               <div class="text-caption">
-                Over the last 28 days
+                Over the last {{ daysDifference }} days
               </div>
               <p class="text-h4">{{ acceptanceRateAverageByLines.toFixed(2) }}%</p>
           </div>
@@ -68,7 +68,7 @@
             <div class="spacing-10"></div>
             <div class="text-h6 mb-1">Total Lines of code Suggested</div>
             <div class="text-caption">
-              Over the last 28 days
+              Over the last {{ daysDifference }} days
             </div>
             <p class="text-h4">{{ totalLinesSuggested }}</p>
           </div>
@@ -100,7 +100,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef } from 'vue';
+import { defineComponent, ref, toRef, computed } from 'vue';
+import { useDateStore } from '@/stores/dateStore';
 import { Metrics } from '../model/Metrics';
 import {
   Chart as ChartJS,
@@ -170,6 +171,23 @@ export default defineComponent({
     let cumulativeNumberAcceptances = ref(0);
     let cumulativeNumberLOCAccepted = ref(0);
     let totalLinesSuggested = ref(0);
+    const dateStore = useDateStore();
+
+    const startDate = computed({
+      get: () => dateStore.startDate,
+      set: (value) => dateStore.setDates(value, dateStore.endDate),
+    });
+
+    const endDate = computed({
+      get: () => dateStore.endDate,
+      set: (value) => dateStore.setDates(dateStore.startDate, value),
+    });
+
+    const updateDates = () => {
+      dateStore.setDates(startDate.value, endDate.value);
+    };
+    const daysDifference = computed(() => dateStore.daysDifference);
+
 
     //Acceptance Rate by lines
     const acceptanceRateByLinesChartData = ref<{ labels: string[]; datasets: any[] }>({ labels: [], datasets: [] });
@@ -347,7 +365,7 @@ export default defineComponent({
       ]
     };
 
-    return { totalSuggestionsAndAcceptanceChartData, chartData, 
+    return { totalSuggestionsAndAcceptanceChartData, chartData, startDate, endDate, updateDates, daysDifference, 
       chartOptions, totalActiveUsersChartData, 
       totalActiveUsersChartOptions, acceptanceRateByLinesChartData, acceptanceRateByCountChartData, acceptanceRateAverageByLines, acceptanceRateAverageByCount, cumulativeNumberSuggestions, 
       cumulativeNumberAcceptances, cumulativeNumberLOCAccepted, totalLinesSuggested };

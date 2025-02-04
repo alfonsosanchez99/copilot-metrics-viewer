@@ -5,7 +5,7 @@
                 <div class="tiles-text">
                     <div class="spacing-25"></div>
                     <div class="text-h6 mb-1">Cumulative Number of Turns</div>
-                    <div class="text-caption">Over the last 28 days</div>
+                    <div class="text-caption">Over the last {{ daysDifference }} days</div>
                     <p class="text-h4">{{ cumulativeNumberTurns }}</p>
                 </div>
             </v-card-item>
@@ -16,7 +16,7 @@
                 <div class="tiles-text">
                     <div class="spacing-10"></div>
                     <div class="text-h6 mb-1">Cumulative Number of Acceptances</div>
-                    <div class="text-caption">Over the last 28 days</div>
+                    <div class="text-caption">Over the last {{ daysDifference }} days</div>
                     <p class="text-h4">{{ cumulativeNumberAcceptances }}</p>
                 </div>
             </v-card-item>
@@ -37,7 +37,8 @@
 </template>
   
 <script lang="ts">
-  import { defineComponent, ref, toRef } from 'vue';
+  import { defineComponent, ref, toRef, computed } from 'vue';
+  import { useDateStore } from '@/stores/dateStore';
   import { Metrics } from '../model/Metrics';
   import { Line, Bar } from 'vue-chartjs'
   import {
@@ -82,6 +83,10 @@ setup(props) {
     let cumulativeNumberAcceptances = ref(0);
 
     let cumulativeNumberTurns = ref(0);
+
+    const dateStore = useDateStore();
+
+    const daysDifference = computed(() => dateStore.daysDifference);
 
     //Total Copilot Chat Active Users
     const totalActiveCopilotChatUsersChartData = ref<{ labels: string[]; datasets: any[] }>({ labels: [], datasets: [] });  
@@ -168,7 +173,7 @@ setup(props) {
         }]
     };
     
-    return {  totalActiveCopilotChatUsersChartData, totalActiveChatUsersChartOptions,cumulativeNumberAcceptances, cumulativeNumberTurns, totalNumberAcceptancesAndTurnsChartData, chartOptions};
+    return {  daysDifference, totalActiveCopilotChatUsersChartData, totalActiveChatUsersChartOptions,cumulativeNumberAcceptances, cumulativeNumberTurns, totalNumberAcceptancesAndTurnsChartData, chartOptions};
 }
 });
 

@@ -8,7 +8,7 @@
               <div class="spacing-25"></div>
               <div class="text-h6 mb-1">Number of {{ breakdownDisplayNamePlural }}</div>
               <div class="text-caption">
-                Over the last 28 days
+                Over the last {{ daysDifference }} days
               </div>
               <p class="text-h4">{{ numberOfBreakdowns }}</p> 
           </div>
@@ -79,7 +79,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef } from 'vue';
+import { defineComponent, ref, toRef, computed } from 'vue';
+import { useDateStore } from '@/stores/dateStore';
 import { Metrics } from '../model/Metrics';
 import { Breakdown } from '../model/Breakdown';
 import { Pie } from 'vue-chartjs'
@@ -144,6 +145,10 @@ export default defineComponent({
     },
   },
   setup(props) {
+
+    const dateStore = useDateStore();
+
+    const daysDifference = computed(() => dateStore.daysDifference);
 
     // Create a reactive reference to store the breakdowns.
     const breakdownList = ref<Breakdown[]>([]);
@@ -248,7 +253,7 @@ export default defineComponent({
 
     numberOfBreakdowns.value = breakdownList.value.length;
 
-    return { chartOptions, breakdownList, numberOfBreakdowns, 
+    return { daysDifference, chartOptions, breakdownList, numberOfBreakdowns, 
       breakdownsChartData, breakdownsChartDataTop5AcceptedPrompts, breakdownsChartDataTop5AcceptedPromptsByLines, breakdownsChartDataTop5AcceptedPromptsByCounts };
   },
   
