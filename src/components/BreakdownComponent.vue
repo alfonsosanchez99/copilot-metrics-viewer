@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef, computed } from 'vue';
+import { defineComponent, ref, computed, watch } from 'vue';
 import { useDateStore } from '@/stores/dateStore';
 import { Metrics } from '../model/Metrics';
 import { Breakdown } from '../model/Breakdown';
@@ -174,46 +174,54 @@ export default defineComponent({
     };
 
     const pieChartColors = ref([
-    '#4B0082', // Indigo
-    '#41B883', // Vue Green
-    '#6495ED', // Cornflower Blue
-    '#87CEFA', // Light Sky Blue
-    '#7CFC00'  // Lawn Green
-]);
-
-    const data = toRef(props, 'metrics').value;
+      '#4B0082', // Indigo
+      '#41B883', // Vue Green
+      '#6495ED', // Cornflower Blue
+      '#87CEFA', // Light Sky Blue
+      '#7CFC00'  // Lawn Green
+    ]);
+    const filteredData = computed(() => {
+      const start = new Date(dateStore.startDate);
+      const end = new Date(dateStore.endDate);
+      return props.metrics.filter((m: Metrics) => {
+        const day = new Date(m.day);
+        return day >= start && day <= end;
+      });
+    });
 
     // Process the breakdown separately
-    data.forEach((m: Metrics) => m.breakdown.forEach(breakdownData => 
-    {
-      //console.log('Processing breakdown data:', breakdownData);
-      const breakdownName = breakdownData[props.breakdownKey as keyof typeof breakdownData] as string;
-      let breakdown = breakdownList.value.find(b => b.name === breakdownName);
+    const updateChats = () => {
+      breakdownList.value = [];
+      filteredData.value.forEach((m: Metrics) => m.breakdown.forEach(breakdownData => 
+      {
+        //console.log('Processing breakdown data:', breakdownData);
+        const breakdownName = breakdownData[props.breakdownKey as keyof typeof breakdownData] as string;
+        let breakdown = breakdownList.value.find(b => b.name === breakdownName);
 
-      if (!breakdown) {
-        // Create a new breakdown object if it does not exist
-        breakdown = new Breakdown({
-          name: breakdownName,
-          acceptedPrompts: breakdownData.acceptances_count,
-          suggestedPrompts: breakdownData.suggestions_count,
-          suggestedLinesOfCode: breakdownData.lines_suggested,
-          acceptedLinesOfCode: breakdownData.lines_accepted,
-        });
-        breakdownList.value.push(breakdown);
-      } else {
-        // Update the existing breakdown object
-        breakdown.acceptedPrompts += breakdownData.acceptances_count;
-        breakdown.suggestedPrompts += breakdownData.suggestions_count;
-        breakdown.suggestedLinesOfCode += breakdownData.lines_suggested;
-        breakdown.acceptedLinesOfCode += breakdownData.lines_accepted;
-      }
-      // Recalculate the acceptance rates
-      breakdown.acceptanceRateByCount = breakdown.suggestedPrompts !== 0 ? (breakdown.acceptedPrompts / breakdown.suggestedPrompts) * 100 : 0;
-      breakdown.acceptanceRateByLines = breakdown.suggestedLinesOfCode !== 0 ? (breakdown.acceptedLinesOfCode / breakdown.suggestedLinesOfCode) * 100 : 0;
+        if (!breakdown) {
+          // Create a new breakdown object if it does not exist
+          breakdown = new Breakdown({
+            name: breakdownName,
+            acceptedPrompts: breakdownData.acceptances_count,
+            suggestedPrompts: breakdownData.suggestions_count,
+            suggestedLinesOfCode: breakdownData.lines_suggested,
+            acceptedLinesOfCode: breakdownData.lines_accepted,
+          });
+          breakdownList.value.push(breakdown);
+        } else {
+          // Update the existing breakdown object
+          breakdown.acceptedPrompts += breakdownData.acceptances_count;
+          breakdown.suggestedPrompts += breakdownData.suggestions_count;
+          breakdown.suggestedLinesOfCode += breakdownData.lines_suggested;
+          breakdown.acceptedLinesOfCode += breakdownData.lines_accepted;
+        }
+        // Recalculate the acceptance rates
+        breakdown.acceptanceRateByCount = breakdown.suggestedPrompts !== 0 ? (breakdown.acceptedPrompts / breakdown.suggestedPrompts) * 100 : 0;
+        breakdown.acceptanceRateByLines = breakdown.suggestedLinesOfCode !== 0 ? (breakdown.acceptedLinesOfCode / breakdown.suggestedLinesOfCode) * 100 : 0;
 
-      // Log each breakdown for debugging
-     // console.log('Breakdown:', breakdown);
-    }));
+        // Log each breakdown for debugging
+      // console.log('Breakdown:', breakdown);
+      }));
 
     //Sort breakdowns map by accepted prompts
     breakdownList.value.sort((a, b) => b.acceptedPrompts - a.acceptedPrompts);
@@ -252,6 +260,15 @@ export default defineComponent({
     };
 
     numberOfBreakdowns.value = breakdownList.value.length;
+  }
+
+  watch(
+      [() => dateStore.startDate, () => dateStore.endDate],
+      () => {
+        updateChats();
+      },
+      { immediate: true }
+    )
 
     return { daysDifference, chartOptions, breakdownList, numberOfBreakdowns, 
       breakdownsChartData, breakdownsChartDataTop5AcceptedPrompts, breakdownsChartDataTop5AcceptedPromptsByLines, breakdownsChartDataTop5AcceptedPromptsByCounts };

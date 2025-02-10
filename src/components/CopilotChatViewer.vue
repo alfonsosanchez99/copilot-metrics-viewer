@@ -37,7 +37,7 @@
 </template>
   
 <script lang="ts">
-  import { defineComponent, ref, toRef, computed } from 'vue';
+  import { defineComponent, ref, toRef, computed, watch} from 'vue';
   import { useDateStore } from '@/stores/dateStore';
   import { Metrics } from '../model/Metrics';
   import { Line, Bar } from 'vue-chartjs'
@@ -81,11 +81,8 @@ Line
 setup(props) {
 
     let cumulativeNumberAcceptances = ref(0);
-
     let cumulativeNumberTurns = ref(0);
-
     const dateStore = useDateStore();
-
     const daysDifference = computed(() => dateStore.daysDifference);
 
     //Total Copilot Chat Active Users
@@ -132,48 +129,68 @@ setup(props) {
 
     const data = toRef(props, 'metrics').value;
 
-    cumulativeNumberTurns.value = 0;
-    const cumulativeNumberTurnsData = data.map((m: Metrics)  => {        
-        cumulativeNumberTurns.value += m.total_chat_turns;
-        return m.total_chat_turns;
+    const filteredData = computed(() => {
+      const start = new Date(dateStore.startDate);
+      const end = new Date(dateStore.endDate);
+      return data.filter((m: Metrics) => {
+        const day = new Date(m.day);
+        return day >= start && day <= end;
+      });
     });
 
-    cumulativeNumberAcceptances.value = 0;
-    const cumulativeNumberAcceptancesData = data.map((m: Metrics)  => {        
-        cumulativeNumberAcceptances.value += m.total_chat_acceptances;
-        return m.total_chat_acceptances;
-    });
+    const updateCharts = () =>  {
+        const filtered = filteredData.value;
+        cumulativeNumberTurns.value = 0;
+        const cumulativeNumberTurnsData = filtered.map((m: Metrics)  => {        
+            cumulativeNumberTurns.value += m.total_chat_turns;
+            return m.total_chat_turns;
+        });
+        cumulativeNumberAcceptances.value = 0;
+        const cumulativeNumberAcceptancesData = filtered.map((m: Metrics)  => {        
+            cumulativeNumberAcceptances.value += m.total_chat_acceptances;
+            return m.total_chat_acceptances;
+        });
 
-    totalNumberAcceptancesAndTurnsChartData.value = {
-    labels: data.map((m: Metrics)  => m.day),
-        datasets: [
-        {
-            label: 'Total Acceptances',
-            data: cumulativeNumberAcceptancesData,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)'
+        totalNumberAcceptancesAndTurnsChartData.value = {
+        labels: filtered.map((m: Metrics)  => m.day),
+            datasets: [
+            {
+                label: 'Total Acceptances',
+                data: cumulativeNumberAcceptancesData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)'
 
-        },
-        {
-            label: 'Total Turns',
-            data: cumulativeNumberTurnsData,
-            backgroundColor: 'rgba(153, 102, 255, 0.2)',
-            borderColor: 'rgba(153, 102, 255, 1)'
-        }]
+            },
+            {
+                label: 'Total Turns',
+                data: cumulativeNumberTurnsData,
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)'
+            }]
+        };
+        totalActiveCopilotChatUsersChartData.value = {
+            labels: filtered.map((m: Metrics) => m.day),
+            datasets: [
+            {
+                label: 'Total Active Copilot Chat Users',
+                data: filtered.map((m: Metrics) => m.total_active_chat_users),
+                backgroundColor: 'rgba(0, 0, 139, 0.2)', // dark blue with 20% opacity
+                borderColor: 'rgba(255, 99, 132, 1)'
+            }]
+        };
+    }
+    watch([() => dateStore.startDate, () => dateStore.endDate], () => {
+      updateCharts();
+    }, { immediate: true }); 
+    return {
+        daysDifference,
+        totalActiveCopilotChatUsersChartData,
+        totalActiveChatUsersChartOptions,
+        cumulativeNumberAcceptances,
+        cumulativeNumberTurns,
+        totalNumberAcceptancesAndTurnsChartData,
+        chartOptions
     };
-
-    totalActiveCopilotChatUsersChartData.value = {
-        labels: data.map((m: Metrics) => m.day),
-        datasets: [
-        {
-            label: 'Total Active Copilot Chat Users',
-            data: data.map((m: Metrics) => m.total_active_chat_users),
-            backgroundColor: 'rgba(0, 0, 139, 0.2)', // dark blue with 20% opacity
-            borderColor: 'rgba(255, 99, 132, 1)'
-        }]
-    };
-    
-    return {  daysDifference, totalActiveCopilotChatUsersChartData, totalActiveChatUsersChartOptions,cumulativeNumberAcceptances, cumulativeNumberTurns, totalNumberAcceptancesAndTurnsChartData, chartOptions};
 }
 });
 

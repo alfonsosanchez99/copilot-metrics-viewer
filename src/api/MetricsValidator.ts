@@ -10,7 +10,7 @@ export class MetricsValidator {
   checkContinuousDates(): string[] {
     const dates = this.metrics.map(metric => new Date(metric.date));
     dates.sort((a, b) => a.getTime() - b.getTime());
-  
+
     const missingDates: string[] = [];
     for (let i = 1; i < dates.length; i++) {
       const prevDate = dates[i - 1];
