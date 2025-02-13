@@ -1,0 +1,109 @@
+[
+    {
+        "date": "2024-12-04",
+        "copilot_ide_chat": {
+            "editors": [
+                {
+                    "name": "vscode",
+                    "models": [
+                        {
+                            "name": "default",
+                            "total_chats": 34,
+                            "is_custom_model": false,
+                            "total_engaged_users": 2,
+                            "total_chat_copy_events": 1,
+                            "total_chat_insertion_events": 0
+                        }
+                    ],
+                    "total_engaged_users": 2
+                },
+                {
+                    "name": "JetBrains",
+                    "models": [
+                        {
+                            "name": "default",
+                            "total_chats": 10,
+                            "is_custom_model": false,
+                            "total_engaged_users": 2,
+                            "total_chat_copy_events": 0,
+                            "total_chat_insertion_events": 1
+                        }
+                    ],
+                    "total_engaged_users": 2
+                }
+            ],
+            "total_engaged_users": 4
+        },
+        "total_active_users": 4,
+        "copilot_dotcom_chat": {
+            "total_engaged_users": 0
+        },
+        "total_engaged_users": 4,
+        "copilot_dotcom_pull_requests": {
+            "total_engaged_users": 0
+        },
+        "copilot_ide_code_completions": {
+            "editors": [
+                {
+                    "name": "JetBrains",
+                    "models": [
+                        {
+                            "name": "default",
+                            "languages": [
+                                {
+                                    "name": "kotlin",
+                                    "total_engaged_users": 1,
+                                    "total_code_acceptances": 0,
+                                    "total_code_suggestions": 3,
+                                    "total_code_lines_accepted": 0,
+                                    "total_code_lines_suggested": 11
+                                },
+                                {
+                                    "name": "json",
+                                    "total_engaged_users": 1,
+                                    "total_code_acceptances": 0,
+                                    "total_code_suggestions": 1,
+                                    "total_code_lines_accepted": 0,
+                                    "total_code_lines_suggested": 37
+                                },
+                                {
+                                    "name": "python",
+                                    "total_engaged_users": 2,
+                                    "total_code_acceptances": 2,
+                                    "total_code_suggestions": 2,
+                                    "total_code_lines_accepted": 12,
+                                    "total_code_lines_suggested": 13
+                                }
+                            ],
+                            "is_custom_model": false,
+                            "total_engaged_users": 2
+                        }
+                    ],
+                    "total_engaged_users": 2
+                },
+                {
+                    "name": "vscode",
+                    "models": [
+                        {
+                            "name": "default",
+                            "languages": [
+                                {
+                                    "name": "python",
+                                    "total_engaged_users": 2,
+                                    "total_code_acceptances": 9,
+                                    "total_code_suggestions": 15,
+                                    "total_code_lines_accepted": 8,
+                                    "total_code_lines_suggested": 21
+                                }
+                            ],
+                            "is_custom_model": false,
+                            "total_engaged_users": 2
+                        }
+                    ],
+                    "total_engaged_users": 2
+                }
+            ],
+            "total_engaged_users": 3
+        }
+    }
+]

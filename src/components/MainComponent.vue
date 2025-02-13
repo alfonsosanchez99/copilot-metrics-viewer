@@ -40,7 +40,7 @@
             <CopilotChatViewer v-if="item === 'copilot chat'" :metrics="metrics" />
             <SeatsAnalysisViewer v-if="item === 'seat analysis'" :seats="seats" />
             <ApiResponse v-if="item === 'api response'" :metrics="metrics" :originalMetrics="originalMetrics" :seats="seats" />
-            <NewFile  v-if="item === 'new file'"/>
+            <NewFile  v-if="item === 'new file'" :metrics="metrics"/>
           </v-card>
         </v-window-item>
       </v-window>

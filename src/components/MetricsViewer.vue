@@ -97,9 +97,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef, computed, watch } from 'vue';
+import { defineComponent, ref, computed, watch } from 'vue';
 import { useDateStore } from '@/stores/dateStore';
-import { Metrics } from '../model/Metrics';
+import { useMetricsStore } from '@/stores/metricStore'
 import {
   Chart as ChartJS,
   ArcElement,
@@ -115,6 +115,7 @@ import {
 
 import { Line } from 'vue-chartjs'
 import { Bar } from 'vue-chartjs'
+import { Metrics } from '@/model/Metrics';
 
 ChartJS.register(
   ArcElement,
@@ -131,12 +132,6 @@ ChartJS.register(
 
 export default defineComponent({
   name: 'MetricsViewer',
-  props: {
-    metrics: {
-      type: Object,
-      required: true
-    }
-  },
   components: {
     Line,
     Bar
@@ -159,7 +154,7 @@ export default defineComponent({
       }
     }
   },
-  setup(props) {
+  setup() {
 
     //Tiles
     let acceptanceRateAverageByLines = ref(0);
@@ -169,11 +164,15 @@ export default defineComponent({
     let cumulativeNumberLOCAccepted = ref(0);
     let totalLinesSuggested = ref(0);
     const dateStore = useDateStore();
+    const metricsStore = useMetricsStore();
+    const newMetrics = useMetricsStore();
+
+    const metrics = computed (() => metricsStore.getMetrics);
 
     const filteredData = computed(() => {
       const start = new Date(dateStore.startDate);
       const end = new Date(dateStore.endDate);
-      return data.filter((m: Metrics) => {
+      return metrics.value.filter((m: Metrics) => {
         const day = new Date(m.day);
         return day >= start && day <= end;
       });
@@ -247,7 +246,7 @@ export default defineComponent({
       },
     };
 
-    const data = toRef(props, 'metrics').value;
+    //const data = toRef(props, 'metrics').value;
 
     watch([startDate, endDate], () => {
       cumulativeNumberSuggestions.value = 0;
