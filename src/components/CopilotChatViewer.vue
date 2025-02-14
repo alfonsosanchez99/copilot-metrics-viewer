@@ -39,6 +39,7 @@
 <script lang="ts">
   import { defineComponent, ref, toRef, computed, watch} from 'vue';
   import { useDateStore } from '@/stores/dateStore';
+  import { useMetricsStore } from '@/stores/metricStore';
   import { Metrics } from '../model/Metrics';
   import { Line, Bar } from 'vue-chartjs'
   import {
@@ -68,21 +69,16 @@ ChartJS.register(
 
 export default defineComponent({
 name: 'CopilotChatViewer',
-props: {
-        metrics: {
-            type: Object,
-            required: true
-        }
-    },
 components: {
 Bar,
 Line
 },
-setup(props) {
+setup() {
 
     let cumulativeNumberAcceptances = ref(0);
     let cumulativeNumberTurns = ref(0);
     const dateStore = useDateStore();
+    const metricsStore = useMetricsStore();
     const daysDifference = computed(() => dateStore.daysDifference);
 
     //Total Copilot Chat Active Users
@@ -127,12 +123,15 @@ setup(props) {
     //Total Number Acceptances And Turns
     const totalNumberAcceptancesAndTurnsChartData = ref<{ labels: string[]; datasets: any[] }>({ labels: [], datasets: [] });
 
-    const data = toRef(props, 'metrics').value;
+    //const data = toRef(props, 'metrics').value;
+
+    const metrics = computed(() => metricsStore.getMetrics);
+
 
     const filteredData = computed(() => {
       const start = new Date(dateStore.startDate);
       const end = new Date(dateStore.endDate);
-      return data.filter((m: Metrics) => {
+      return metrics.value.filter((m: Metrics) => {
         const day = new Date(m.day);
         return day >= start && day <= end;
       });

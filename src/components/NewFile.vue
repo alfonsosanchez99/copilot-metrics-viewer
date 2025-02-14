@@ -56,7 +56,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import config from '../config';
 import { convertToMetrics } from '../api/MetricsToUsageConverter';
 import { CopilotMetrics } from '../model/Copilot_Metrics';
 import { useMetricsStore } from '@/stores/metricStore';
@@ -89,6 +88,7 @@ export default defineComponent({
           const metricsData = convertToMetrics(originalData);
 
           const metricsStore = useMetricsStore();
+          metricsStore.setOriginalMetrics(originalData); 
           metricsStore.setMetrics(metricsData);
 
           this.$emit('load-main-component');

@@ -83,6 +83,7 @@ import { defineComponent, ref, computed, watch } from 'vue';
 import { useDateStore } from '@/stores/dateStore';
 import { Metrics } from '../model/Metrics';
 import { Breakdown } from '../model/Breakdown';
+import { useMetricsStore } from '@/stores/metricStore';
 import { Pie } from 'vue-chartjs'
 
 import {
@@ -113,10 +114,6 @@ ChartJS.register(
 export default defineComponent({
   name: 'BreakdownComponent',
   props: {
-      metrics: {
-          type: Object,
-          required: true
-      },
       breakdownKey: {
           type: String,
           required: true
@@ -147,6 +144,8 @@ export default defineComponent({
   setup(props) {
 
     const dateStore = useDateStore();
+    const metricsStore = useMetricsStore();
+    const metrics = computed(() => metricsStore.getMetrics);
 
     const daysDifference = computed(() => dateStore.daysDifference);
 
@@ -183,7 +182,7 @@ export default defineComponent({
     const filteredData = computed(() => {
       const start = new Date(dateStore.startDate);
       const end = new Date(dateStore.endDate);
-      return props.metrics.filter((m: Metrics) => {
+      return metrics.value.filter((m: Metrics) => {
         const day = new Date(m.day);
         return day >= start && day <= end;
       });
